@@ -1,0 +1,22 @@
+# Document Inbox Configuration
+# Copy to ~/.config/document-inbox/config.toml
+
+[paths]
+# iCloud Preview folder (source of scanned docs)
+source = "~/Library/Mobile Documents/com~apple~Preview/Documents"
+
+# Base folder for document management
+# Structure:
+#   {base}/.pending/    - files awaiting processing
+#   {base}/.trash/      - originals (auto-purged after retention_days)
+#   {base}/.quarantine/ - failed processing
+#   {base}/yyyy/mm/     - processed documents
+base = "~/Documents/Inbox"
+
+[cleanup]
+# Days to keep files in trash before purging
+retention_days = 30
+
+[watch]
+# File patterns to watch for
+patterns = ["*.pdf", "*.png", "*.jpg", "*.jpeg"]
