@@ -3,7 +3,6 @@
 import fnmatch
 import logging
 import shutil
-import subprocess
 import time
 from datetime import datetime
 from pathlib import Path
@@ -14,6 +13,7 @@ from watchdog.observers import Observer
 from .adapters.llm import ClaudeCLIAdapter
 from .adapters.metadata import PikePdfAdapter
 from .adapters.ocr import OcrMyPdfAdapter
+from .adapters.platform import is_file_ready
 from .adapters.storage import FilesystemAdapter
 from .config import Settings
 from .domain.services import ProcessingService
@@ -69,38 +69,23 @@ class DocumentHandler(FileSystemEventHandler):
             logger.exception(f"Failed to handle {path.name}: {e}")
 
     def _wait_for_stability(self, path: Path) -> bool:
-        """Wait until no process has the file open."""
+        """Wait until file is fully synced and ready.
+
+        Uses NSURL resource keys on macOS to check iCloud sync status.
+        """
         start = time.time()
 
         while time.time() - start < STABILITY_TIMEOUT:
             if not path.exists():
                 return False
 
-            if path.stat().st_size == 0:
-                time.sleep(STABILITY_WAIT)
-                continue
-
-            if not self._is_file_open(path):
+            if is_file_ready(path):
                 return True
 
             time.sleep(STABILITY_WAIT)
 
         logger.warning(f"Timeout waiting for file: {path.name}")
         return path.exists() and path.stat().st_size > 0
-
-    def _is_file_open(self, path: Path) -> bool:
-        """Check if any process has the file open using lsof."""
-        try:
-            result = subprocess.run(
-                ["lsof", "--", str(path)],
-                capture_output=True,
-                timeout=5,
-            )
-            # lsof returns 0 if file is open, 1 if not
-            return result.returncode == 0
-        except (subprocess.TimeoutExpired, FileNotFoundError):
-            # If lsof fails, fall back to assuming file is ready
-            return False
 
     def _ingest(self, path: Path) -> Path:
         """Copy file to .pending, move original to .trash."""
