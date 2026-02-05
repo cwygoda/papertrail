@@ -22,21 +22,24 @@ class OcrMyPdfAdapter(OCRPort):
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
             tmp_path = Path(tmp.name)
 
-        subprocess.run(
-            [
-                "ocrmypdf",
-                "--quiet",
-                "--force-ocr",
-                "--optimize", "1",
-                "--output-type", "pdfa",
-                "--sidecar", str(sidecar_path),
-                str(path),
-                str(tmp_path),
-            ],
-            check=True,
-        )
-
-        shutil.move(tmp_path, path)
+        try:
+            subprocess.run(
+                [
+                    "ocrmypdf",
+                    "--quiet",
+                    "--force-ocr",
+                    "--optimize", "1",
+                    "--output-type", "pdfa",
+                    "--sidecar", str(sidecar_path),
+                    str(path),
+                    str(tmp_path),
+                ],
+                check=True,
+            )
+            shutil.move(tmp_path, path)
+        finally:
+            if tmp_path.exists():
+                tmp_path.unlink()
 
         logger.info(f"OCR complete: {path.name} (PDF/A + sidecar)")
         return path

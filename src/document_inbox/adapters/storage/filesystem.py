@@ -12,13 +12,22 @@ from ...ports.storage import StoragePort
 logger = logging.getLogger(__name__)
 
 
-def sanitize_filename(name: str) -> str:
+def sanitize_filename(name: str, max_length: int = 180) -> str:
     """Remove/replace characters invalid in filenames."""
+    # Remove null bytes
+    name = name.replace("\x00", "")
+    # Replace path traversal attempts
+    name = name.replace("..", "_")
     # Replace problematic characters
     name = re.sub(r'[<>:"/\\|?*]', "_", name)
     # Collapse multiple spaces/underscores
     name = re.sub(r"[_\s]+", " ", name)
-    return name.strip()
+    # Remove leading/trailing dots and spaces
+    name = name.strip(". ")
+    # Limit length (leave room for date suffix + extension)
+    if len(name) > max_length:
+        name = name[:max_length].rsplit(" ", 1)[0]
+    return name or "Untitled"
 
 
 class FilesystemAdapter(StoragePort):

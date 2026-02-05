@@ -3,6 +3,7 @@
 import json
 import logging
 from datetime import date
+from urllib.parse import urlparse
 
 import httpx
 
@@ -29,6 +30,9 @@ class OllamaAdapter(LLMPort):
         model: str = "gemma3:4b",
         base_url: str = "http://localhost:11434",
     ) -> None:
+        parsed = urlparse(base_url)
+        if parsed.scheme not in ("http", "https"):
+            raise ValueError(f"Invalid ollama_url scheme: {parsed.scheme}")
         self.model = model
         self.base_url = base_url.rstrip("/")
 
