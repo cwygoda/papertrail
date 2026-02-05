@@ -13,12 +13,14 @@ logger = logging.getLogger(__name__)
 ANALYSIS_PROMPT = """Analyze this text of a scanned document - most likely in German - and extract:
 - title: document title or descriptive name
 - subject: main topic/category
-- author: who wrote/sent/issued the document (or "Unknown")
+- issuer: who wrote/sent/issued the document (or "Unknown")
 - summary: 2-3 sentence summary
 - date: document/issue date in YYYY-MM-DD format (or null if not found)
 
-Document text:
+Respond only in JSON with keys: title, subject, issuer, summary, date. Output in German.
 
+Document text:
+---
 {text}"""
 
 JSON_SCHEMA = {
@@ -26,11 +28,11 @@ JSON_SCHEMA = {
     "properties": {
         "title": {"type": "string"},
         "subject": {"type": "string"},
-        "author": {"type": "string"},
+        "issuer": {"type": "string"},
         "summary": {"type": "string"},
         "date": {"type": ["string", "null"]},
     },
-    "required": ["title", "subject", "author", "summary", "date"],
+    "required": ["title", "subject", "issuer", "summary", "date"],
 }
 
 
@@ -73,7 +75,7 @@ class ClaudeCLIAdapter(LLMPort):
         return DocumentInfo(
             title=content.get("title", "Untitled"),
             subject=content.get("subject", ""),
-            author=content.get("author", "Unknown"),
+            issuer=content.get("issuer", "Unknown"),
             summary=content.get("summary", ""),
             date=doc_date,
         )

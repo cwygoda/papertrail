@@ -7,7 +7,7 @@ from pathlib import Path
 
 import click
 
-from .adapters.llm import ClaudeCLIAdapter
+from .adapters.llm import create_llm_adapter
 from .adapters.metadata import PikePdfAdapter
 from .adapters.ocr import OcrMyPdfAdapter
 from .adapters.storage import FilesystemAdapter
@@ -71,7 +71,7 @@ def process(ctx: click.Context, file: Path, keep: bool) -> None:
     # Wire up adapters
     service = ProcessingService(
         ocr=OcrMyPdfAdapter(),
-        llm=ClaudeCLIAdapter(),
+        llm=create_llm_adapter(settings.llm),
         metadata=PikePdfAdapter(),
         storage=FilesystemAdapter(settings.paths.base),
         quarantine_dir=settings.paths.quarantine if not keep else None,
@@ -82,7 +82,7 @@ def process(ctx: click.Context, file: Path, keep: bool) -> None:
     if result.success:
         click.echo(f"title: {result.document_info.title}")
         click.echo(f"subject: {result.document_info.subject}")
-        click.echo(f"author: {result.document_info.author}")
+        click.echo(f"issuer: {result.document_info.issuer}")
         click.echo(f"date: {result.document_info.date}")
         click.echo(f"summary: {result.document_info.summary}")
         click.echo(f"text_length: {result.text_length}")

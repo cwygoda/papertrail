@@ -1,5 +1,6 @@
 """Configuration management using pydantic-settings."""
 
+from enum import Enum
 from pathlib import Path
 from typing import Self
 
@@ -16,6 +17,22 @@ DEFAULT_BASE = "~/Documents/Inbox"
 DEFAULT_PATTERNS = ["*.pdf", "*.png", "*.jpg", "*.jpeg"]
 DEFAULT_RETENTION_DAYS = 30
 CONFIG_PATH = Path("~/.config/document-inbox/config.toml").expanduser()
+
+
+class LLMProvider(str, Enum):
+    """Available LLM providers."""
+
+    OLLAMA = "ollama"
+    CLAUDE_CLI = "claude-cli"
+    CLAUDE_API = "claude-api"
+
+
+class LLMConfig(BaseSettings):
+    """LLM provider configuration."""
+
+    provider: LLMProvider = LLMProvider.OLLAMA
+    model: str = "gemma3:4b"
+    ollama_url: str = "http://localhost:11434"
 
 
 class PathsConfig(BaseSettings):
@@ -54,6 +71,7 @@ class Settings(BaseSettings):
     paths: PathsConfig = PathsConfig()
     cleanup: CleanupConfig = CleanupConfig()
     watch: WatchConfig = WatchConfig()
+    llm: LLMConfig = LLMConfig()
 
     @model_validator(mode="after")
     def ensure_dirs(self) -> Self:
@@ -75,6 +93,7 @@ def load_settings(config_path: Path | None = None) -> Settings:
         paths = PathsConfig(**data.get("paths", {}))
         cleanup = CleanupConfig(**data.get("cleanup", {}))
         watch = WatchConfig(**data.get("watch", {}))
-        return Settings(paths=paths, cleanup=cleanup, watch=watch)
+        llm = LLMConfig(**data.get("llm", {}))
+        return Settings(paths=paths, cleanup=cleanup, watch=watch, llm=llm)
 
     return Settings()

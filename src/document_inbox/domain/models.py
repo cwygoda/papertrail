@@ -11,7 +11,7 @@ class DocumentInfo:
 
     title: str
     subject: str
-    author: str
+    issuer: str
     summary: str
     date: date | None  # Issue/document date
 

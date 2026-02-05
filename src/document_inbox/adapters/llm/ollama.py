@@ -1,7 +1,10 @@
-"""LLM adapter using Claude API."""
+"""LLM adapter using Ollama."""
 
+import json
 import logging
 from datetime import date
+
+import httpx
 
 from ...domain.models import DocumentInfo
 from ...ports.llm import LLMPort
@@ -18,35 +21,42 @@ SYSTEM_PROMPT = """Analyze this text of a scanned document - most likely in Germ
 Respond only in JSON with keys: title, subject, issuer, summary, date. Output in German."""
 
 
-class ClaudeAPIAdapter(LLMPort):
-    """LLM implementation using Claude API (pay-as-you-go)."""
+class OllamaAdapter(LLMPort):
+    """LLM implementation using Ollama."""
 
-    def __init__(self, model: str = "claude-sonnet-4-20250514") -> None:
-        import anthropic
-
-        self.client = anthropic.Anthropic()
+    def __init__(
+        self,
+        model: str = "gemma3:4b",
+        base_url: str = "http://localhost:11434",
+    ) -> None:
         self.model = model
+        self.base_url = base_url.rstrip("/")
 
     def analyze(self, text: str) -> DocumentInfo:
-        logger.info("Analyzing document with Claude API")
+        logger.info(f"Analyzing document with Ollama ({self.model})")
 
         if len(text) > 100_000:
             text = text[:100_000] + "\n\n[Truncated...]"
 
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=1024,
-            system=SYSTEM_PROMPT,
-            messages=[
-                {"role": "user", "content": f"Document text:\n---\n{text}"},
-            ],
+        response = httpx.post(
+            f"{self.base_url}/api/chat",
+            json={
+                "model": self.model,
+                "messages": [
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": f"Document text:\n---\n{text}"},
+                ],
+                "stream": False,
+                "format": "json",
+            },
+            timeout=120.0,
         )
+        response.raise_for_status()
 
-        return self._parse_response(response.content[0].text)
+        content = response.json()["message"]["content"]
+        return self._parse_response(content)
 
     def _parse_response(self, text: str) -> DocumentInfo:
-        import json
-
         try:
             data = json.loads(text)
         except json.JSONDecodeError:

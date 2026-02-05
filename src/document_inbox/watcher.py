@@ -10,7 +10,7 @@ from pathlib import Path
 from watchdog.events import FileCreatedEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
-from .adapters.llm import ClaudeCLIAdapter
+from .adapters.llm import create_llm_adapter
 from .adapters.metadata import PikePdfAdapter
 from .adapters.ocr import OcrMyPdfAdapter
 from .adapters.platform import is_file_ready
@@ -28,7 +28,7 @@ def create_processing_service(settings: Settings) -> ProcessingService:
     """Create a ProcessingService with configured adapters."""
     return ProcessingService(
         ocr=OcrMyPdfAdapter(),
-        llm=ClaudeCLIAdapter(),
+        llm=create_llm_adapter(settings.llm),
         metadata=PikePdfAdapter(),
         storage=FilesystemAdapter(settings.paths.base),
         quarantine_dir=settings.paths.quarantine,

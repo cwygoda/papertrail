@@ -23,7 +23,7 @@ class PikePdfAdapter(MetadataPort):
             with pdf.open_metadata() as meta:
                 meta["dc:title"] = info.title
                 meta["dc:subject"] = info.subject
-                meta["dc:creator"] = [info.author]
+                meta["dc:creator"] = [info.issuer]
                 meta["dc:description"] = info.summary
                 if info.date:
                     meta["dc:date"] = info.date.isoformat()
@@ -38,7 +38,7 @@ class PikePdfAdapter(MetadataPort):
         data = {
             "title": info.title,
             "subject": info.subject,
-            "author": info.author,
+            "issuer": info.issuer,
             "date": info.date.isoformat() if info.date else None,
             "summary": info.summary,
             "processed_at": datetime.now().isoformat(),
