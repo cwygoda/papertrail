@@ -20,3 +20,13 @@ retention_days = 30
 [watch]
 # File patterns to watch for
 patterns = ["*.pdf", "*.png", "*.jpg", "*.jpeg"]
+
+[llm]
+# Provider: ollama (default), claude-cli, claude-api
+provider = "ollama"
+
+# Model name (used by ollama and claude-api)
+model = "gemma3:4b"
+
+# Ollama server URL
+ollama_url = "http://localhost:11434"

@@ -100,7 +100,7 @@ def process(ctx: click.Context, file: Path, keep: bool) -> None:
 @cli.command()
 def install() -> None:
     """Install launchd service."""
-    plist_src = Path(__file__).parent.parent.parent.parent / PLIST_NAME
+    plist_src = Path(__file__).parent.parent.parent / "resources" / PLIST_NAME
     plist_dest = LAUNCHAGENTS_DIR / PLIST_NAME
 
     if not plist_src.exists():
