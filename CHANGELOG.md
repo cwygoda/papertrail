@@ -1,3 +1,12 @@
+# [0.2.0](https://github.com/cwygoda/papertrail/compare/v0.1.0...v0.2.0) (2026-02-08)
+
+
+### Features
+
+* **metadata:** switch sidecar format from YAML to XMP ([b2c8685](https://github.com/cwygoda/papertrail/commit/b2c8685ee4874d3a0b6c0f00086456593598322a))
+* **reprocess:** add command to update stored documents ([8d61917](https://github.com/cwygoda/papertrail/commit/8d61917c5b9225b6df63caae134caba0f600a000))
+* **steuerrelevant:** add tax relevance tagging for documents ([fc81cd2](https://github.com/cwygoda/papertrail/commit/fc81cd2790a92f191087e69d86ea3a93e78560f3))
+
 # [0.1.0](https://github.com/cwygoda/papertrail/compare/v0.0.0...v0.1.0) (2026-02-08)
 
 
