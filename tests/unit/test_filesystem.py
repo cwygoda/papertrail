@@ -1,8 +1,12 @@
 """Unit tests for filesystem storage adapter."""
 
+import os
+import stat
+import sys
+
 import pytest
 
-from papertrail.adapters.storage.filesystem import sanitize_filename
+from papertrail.adapters.storage.filesystem import _clear_hidden_flag, sanitize_filename
 
 
 class TestSanitizeFilename:
@@ -55,3 +59,34 @@ class TestSanitizeFilename:
     def test_unicode_preserved(self) -> None:
         assert sanitize_filename("Rechnung für März") == "Rechnung für März"
         assert sanitize_filename("日本語ファイル") == "日本語ファイル"
+
+
+@pytest.mark.skipif(sys.platform != "darwin", reason="macOS only")
+class TestClearHiddenFlag:
+    """Tests for _clear_hidden_flag function."""
+
+    def test_clears_hidden_flag(self, tmp_path: pytest.TempPathFactory) -> None:
+        path = tmp_path / "hidden.txt"
+        path.write_text("test")
+        os.chflags(path, stat.UF_HIDDEN)
+        assert os.stat(path).st_flags & stat.UF_HIDDEN
+
+        _clear_hidden_flag(path)
+        assert not (os.stat(path).st_flags & stat.UF_HIDDEN)
+
+    def test_preserves_other_flags(self, tmp_path: pytest.TempPathFactory) -> None:
+        path = tmp_path / "nodump.txt"
+        path.write_text("test")
+        os.chflags(path, stat.UF_NODUMP | stat.UF_HIDDEN)
+
+        _clear_hidden_flag(path)
+        flags = os.stat(path).st_flags
+        assert not (flags & stat.UF_HIDDEN)
+        assert flags & stat.UF_NODUMP
+
+    def test_noop_if_not_hidden(self, tmp_path: pytest.TempPathFactory) -> None:
+        path = tmp_path / "visible.txt"
+        path.write_text("test")
+
+        _clear_hidden_flag(path)  # Should not raise
+        assert not (os.stat(path).st_flags & stat.UF_HIDDEN)

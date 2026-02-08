@@ -1,8 +1,10 @@
 """Storage adapter using local filesystem."""
 
 import logging
+import os
 import re
 import shutil
+import stat
 from datetime import date
 from pathlib import Path
 
@@ -10,6 +12,18 @@ from ...domain.models import DocumentInfo
 from ...ports.storage import StoragePort
 
 logger = logging.getLogger(__name__)
+
+
+def _clear_hidden_flag(path: Path) -> None:
+    """Clear macOS hidden flag (UF_HIDDEN) if set."""
+    try:
+        current = os.stat(path).st_flags
+        if current & stat.UF_HIDDEN:
+            os.chflags(path, current & ~stat.UF_HIDDEN)
+            logger.debug(f"Cleared hidden flag: {path.name}")
+    except (OSError, AttributeError):
+        # Not macOS or permission issue - ignore
+        pass
 
 
 def sanitize_filename(name: str, max_length: int = 180) -> str:
@@ -60,6 +74,7 @@ class FilesystemAdapter(StoragePort):
                 counter += 1
 
         shutil.move(str(path), dest)
+        _clear_hidden_flag(dest)
         logger.info(f"Stored: {dest.relative_to(self.base_path)}")
 
         return dest
@@ -68,6 +83,7 @@ class FilesystemAdapter(StoragePort):
         """Store sidecar file alongside its PDF."""
         dest = pdf_path.with_suffix(sidecar_path.suffix)
         shutil.move(str(sidecar_path), dest)
+        _clear_hidden_flag(dest)
         return dest
 
     def quarantine(self, path: Path, quarantine_dir: Path) -> Path:
@@ -83,6 +99,7 @@ class FilesystemAdapter(StoragePort):
                 counter += 1
 
         shutil.move(str(path), dest)
+        _clear_hidden_flag(dest)
         logger.warning(f"Quarantined: {path.name}")
 
         return dest
