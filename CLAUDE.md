@@ -2,16 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Build & Test Commands
+## Commands
 
 ```bash
-uv sync                     # Install dependencies
-uv sync --group dev         # Install with dev dependencies
-uv run pytest               # Run all tests
-uv run pytest -v            # Verbose test output
-uv run pytest tests/unit/   # Run only unit tests
-uv run pytest -k "test_name"  # Run specific test by name
-uv run papertrail process /path/to.pdf  # Test single file processing
+just bootstrap    # Install deps + pre-commit hooks (run first)
+just check        # Run all checks (lint, typecheck, test)
+just lint-fix     # Auto-fix lint issues
+just test-one PATTERN  # Run specific test by name
 ```
 
 ## Architecture

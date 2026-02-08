@@ -2,7 +2,6 @@
 
 import logging
 from datetime import datetime, timedelta
-from pathlib import Path
 
 from .config import Settings
 

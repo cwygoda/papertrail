@@ -64,7 +64,7 @@ def is_file_ready(path: Path) -> bool:
     return ready
 
 
-def _get_resource_value(url: NSURL, key: str):
+def _get_resource_value(url: "NSURL", key: str) -> object:
     """Get a resource value from NSURL, returning None on error."""
     success, value, error = url.getResourceValue_forKey_error_(None, key, None)
     if not success or error:

@@ -1,7 +1,5 @@
 """Unit tests for LLM validation module."""
 
-import pytest
-
 from papertrail.adapters.llm.validation import (
     DOC_BEGIN,
     DOC_END,

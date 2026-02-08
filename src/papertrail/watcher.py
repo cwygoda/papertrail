@@ -7,7 +7,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from watchdog.events import FileCreatedEvent, FileSystemEventHandler
+from watchdog.events import DirCreatedEvent, FileCreatedEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
 from .adapters.llm import create_llm_adapter
@@ -43,11 +43,11 @@ class DocumentHandler(FileSystemEventHandler):
         self.service = service
         self.patterns = settings.watch.patterns
 
-    def on_created(self, event: FileCreatedEvent) -> None:
+    def on_created(self, event: FileCreatedEvent | DirCreatedEvent) -> None:
         if event.is_directory:
             return
 
-        path = Path(event.src_path)
+        path = Path(str(event.src_path))
         if self._matches_patterns(path):
             self._handle_file(path)
 
@@ -114,10 +114,8 @@ class DocumentHandler(FileSystemEventHandler):
         """Process file through the pipeline."""
         result = self.service.process(path)
 
-        if result.success:
-            logger.info(
-                f"Processed: {path.name} -> {result.output_path.name}"
-            )
+        if result.success and result.output_path:
+            logger.info(f"Processed: {path.name} -> {result.output_path.name}")
         else:
             logger.error(f"Processing failed: {path.name} - {result.errors}")
 

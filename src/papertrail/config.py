@@ -1,16 +1,12 @@
 """Configuration management using pydantic-settings."""
 
-from enum import Enum
+import tomllib
+from enum import StrEnum
 from pathlib import Path
 from typing import Self
 
 from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-try:
-    import tomllib
-except ImportError:
-    import tomli as tomllib
 
 DEFAULT_SOURCE = "~/Library/Mobile Documents/com~apple~Preview/Documents"
 DEFAULT_BASE = "~/Documents/Inbox"
@@ -19,7 +15,7 @@ DEFAULT_RETENTION_DAYS = 30
 CONFIG_PATH = Path("~/.config/papertrail/config.toml").expanduser()
 
 
-class LLMProvider(str, Enum):
+class LLMProvider(StrEnum):
     """Available LLM providers."""
 
     OLLAMA = "ollama"

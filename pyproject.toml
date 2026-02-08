@@ -26,6 +26,9 @@ papertrail = "papertrail.__main__:cli"
 dev = [
     "pytest>=8.0.0",
     "pytest-bdd>=8.0.0",
+    "pre-commit>=4.0.0",
+    "ruff>=0.9.0",
+    "ty>=0.0.15",
 ]
 
 [build-system]
@@ -35,3 +38,17 @@ build-backend = "uv_build"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 bdd_features_base_dir = "tests/bdd"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.ty.src]
+exclude = ["tests/"]
+
+[[tool.ty.overrides]]
+include = ["src/papertrail/adapters/platform/macos.py"]
+rules = { unresolved-import = "ignore" }

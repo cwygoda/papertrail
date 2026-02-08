@@ -7,7 +7,7 @@ DOC_BEGIN = "<<<DOCUMENT_TEXT_BEGIN>>>"
 DOC_END = "<<<DOCUMENT_TEXT_END>>>"
 
 # Pattern for suspicious content: path traversal, code-like, control chars
-_SUSPICIOUS_PATTERN = re.compile(r'\.\./|[{}<>`]|[\x00-\x1f]')
+_SUSPICIOUS_PATTERN = re.compile(r"\.\./|[{}<>`]|[\x00-\x1f]")
 
 
 def looks_suspicious(text: str) -> bool:

@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from papertrail.domain.models import DocumentInfo, ProcessingResult
+from papertrail.domain.models import DocumentInfo
 from papertrail.ports.llm import LLMPort
 from papertrail.ports.metadata import MetadataPort
 from papertrail.ports.ocr import OCRPort

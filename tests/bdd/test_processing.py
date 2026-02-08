@@ -96,7 +96,9 @@ def llm_returns_info(context: dict) -> None:
     context["llm"].analyze.return_value = info
     context["metadata"].write_sidecar.return_value = Path("/tmp/test.yaml")
     context["storage"].store.return_value = Path("/storage/2024/03/Invoice.pdf")
-    context["storage"].store_sidecar.return_value = Path("/storage/2024/03/Invoice.yaml")
+    context["storage"].store_sidecar.return_value = Path(
+        "/storage/2024/03/Invoice.yaml"
+    )
 
 
 @when("I process the document")
@@ -118,9 +120,9 @@ def result_successful(context: dict) -> None:
 @then(parsers.parse('the result should have error "{error}"'))
 def result_has_error(context: dict, error: str) -> None:
     result: ProcessingResult = context["result"]
-    assert any(
-        error in e for e in result.errors
-    ), f"Expected error '{error}', got: {result.errors}"
+    assert any(error in e for e in result.errors), (
+        f"Expected error '{error}', got: {result.errors}"
+    )
 
 
 @then("the document should be stored")

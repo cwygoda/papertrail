@@ -32,9 +32,7 @@ def setup_logging(verbose: bool = False) -> None:
 
 @click.group()
 @click.option("-v", "--verbose", is_flag=True, help="Enable debug logging")
-@click.option(
-    "-c", "--config", type=click.Path(exists=True), help="Config file path"
-)
+@click.option("-c", "--config", type=click.Path(exists=True), help="Config file path")
 @click.pass_context
 def cli(ctx: click.Context, verbose: bool, config: str | None) -> None:
     """Papertrail - iCloud Preview folder watcher."""
@@ -79,7 +77,7 @@ def process(ctx: click.Context, file: Path, keep: bool) -> None:
 
     result = service.process(file, keep=keep)
 
-    if result.success:
+    if result.success and result.document_info:
         click.echo(f"title: {result.document_info.title}")
         click.echo(f"subject: {result.document_info.subject}")
         click.echo(f"issuer: {result.document_info.issuer}")
