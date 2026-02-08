@@ -1,15 +1,14 @@
-"""Metadata adapter using pikepdf and YAML."""
+"""Metadata adapter using pikepdf and XMP sidecars."""
 
 import logging
 import sys
-from datetime import datetime
 from pathlib import Path
 
 import pikepdf
-import yaml
 
 from ...domain.models import DocumentInfo
 from ...ports.metadata import MetadataPort
+from .xmp import write_xmp_sidecar
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +16,7 @@ STEUERRELEVANT_TAG = "Steuerrelevant"
 
 
 class PikePdfAdapter(MetadataPort):
-    """Metadata implementation using pikepdf for PDF and YAML for sidecar."""
+    """Metadata implementation using pikepdf for PDF and XMP for sidecar."""
 
     def update_pdf(self, path: Path, info: DocumentInfo) -> None:
         logger.info(f"Updating PDF metadata: {path.name}")
@@ -55,22 +54,5 @@ class PikePdfAdapter(MetadataPort):
             logger.warning(f"Failed to set Finder tag: {e}")
 
     def write_sidecar(self, path: Path, info: DocumentInfo) -> Path:
-        sidecar_path = path.with_suffix(".yaml")
-
-        data = {
-            "title": info.title,
-            "subject": info.subject,
-            "issuer": info.issuer,
-            "date": info.date.isoformat() if info.date else None,
-            "summary": info.summary,
-            "steuerrelevant": info.steuerrelevant,
-            "processed_at": datetime.now().isoformat(),
-            "source_file": path.name,
-        }
-
-        logger.info(f"Writing sidecar: {sidecar_path.name}")
-        sidecar_path.write_text(
-            yaml.dump(data, default_flow_style=False, allow_unicode=True)
-        )
-
-        return sidecar_path
+        logger.info(f"Writing XMP sidecar for: {path.name}")
+        return write_xmp_sidecar(path, info)

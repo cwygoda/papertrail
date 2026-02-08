@@ -10,7 +10,7 @@ import click
 import yaml
 
 from .adapters.llm import create_llm_adapter
-from .adapters.metadata import PikePdfAdapter
+from .adapters.metadata import PikePdfAdapter, convert_yaml_to_xmp
 from .adapters.ocr import OcrMyPdfAdapter
 from .adapters.storage import FilesystemAdapter
 from .cleanup import run_cleanup
@@ -212,6 +212,52 @@ def reprocess(
             click.echo(f"✗ {pdf.name}: {result.errors}", err=True)
 
     click.echo(f"\nReprocessed: {success_count} success, {error_count} errors")
+
+
+@cli.command("convert-sidecars")
+@click.argument("path", type=click.Path(exists=True, path_type=Path))
+@click.option("--recursive/--no-recursive", default=True, help="Process recursively")
+@click.option("--dry-run", is_flag=True, help="Show what would be converted")
+@click.option("--delete-yaml", is_flag=True, help="Delete YAML after conversion")
+def convert_sidecars(
+    path: Path,
+    recursive: bool,
+    dry_run: bool,
+    delete_yaml: bool,
+) -> None:
+    """Convert YAML sidecars to XMP format."""
+    # Collect YAML files
+    if path.is_file():
+        yamls = [path] if path.suffix.lower() == ".yaml" else []
+    else:
+        pattern = "**/*.yaml" if recursive else "*.yaml"
+        yamls = sorted(path.glob(pattern))
+
+    if not yamls:
+        click.echo("No YAML sidecars to convert")
+        return
+
+    if dry_run:
+        click.echo(f"Would convert {len(yamls)} files:")
+        for y in yamls:
+            click.echo(f"  {y} → {y.with_suffix('.xmp')}")
+        return
+
+    success_count = 0
+    error_count = 0
+
+    for yaml_path in yamls:
+        try:
+            xmp_path = convert_yaml_to_xmp(yaml_path)
+            success_count += 1
+            click.echo(f"✓ {yaml_path.name} → {xmp_path.name}")
+            if delete_yaml:
+                yaml_path.unlink()
+        except Exception as e:
+            error_count += 1
+            click.echo(f"✗ {yaml_path.name}: {e}", err=True)
+
+    click.echo(f"\nConverted: {success_count} success, {error_count} errors")
 
 
 @cli.command()

@@ -45,7 +45,7 @@ def mock_llm(sample_document_info: DocumentInfo) -> MagicMock:
 def mock_metadata() -> MagicMock:
     """Mock metadata port."""
     mock = MagicMock(spec=MetadataPort)
-    mock.write_sidecar.return_value = Path("/tmp/test.yaml")
+    mock.write_sidecar.return_value = Path("/tmp/test.xmp")
     return mock
 
 
@@ -55,6 +55,6 @@ def mock_storage() -> MagicMock:
     mock = MagicMock(spec=StoragePort)
     mock.store.return_value = Path("/storage/2024/03/Invoice 12345 - 2024-03-15.pdf")
     mock.store_sidecar.return_value = Path(
-        "/storage/2024/03/Invoice 12345 - 2024-03-15.yaml"
+        "/storage/2024/03/Invoice 12345 - 2024-03-15.xmp"
     )
     return mock
