@@ -104,3 +104,71 @@ class ProcessingService:
                 sidecar = path.with_suffix(suffix)
                 if sidecar.exists():
                     self.storage.quarantine(sidecar, self.quarantine_dir)
+
+
+class ReprocessingService:
+    """Reprocesses already-stored documents in-place (no moves, no quarantine)."""
+
+    def __init__(
+        self,
+        ocr: OCRPort,
+        llm: LLMPort,
+        metadata: MetadataPort,
+    ) -> None:
+        self.ocr = ocr
+        self.llm = llm
+        self.metadata = metadata
+
+    def reprocess(self, path: Path) -> ProcessingResult:
+        """Reprocess a stored document.
+
+        Pipeline:
+            1. Extract text (OCR only if no text layer)
+            2. LLM analysis
+            3. Update PDF metadata in-place
+            4. Update sidecar in-place
+
+        No file moves, no quarantine.
+        """
+        result = ProcessingResult(source_path=path)
+        logger.info(f"Reprocessing: {path.name}")
+
+        if path.suffix.lower() != ".pdf":
+            result.errors.append(f"Unsupported file type: {path.suffix}")
+            return result
+
+        try:
+            # 1. Extract text - try existing sidecar first, else OCR
+            txt_sidecar = path.with_suffix(".txt")
+            if txt_sidecar.exists():
+                text = txt_sidecar.read_text()
+                logger.debug("Using existing text sidecar")
+            else:
+                logger.debug("No text sidecar, running OCR")
+                self.ocr.process(path)
+                text = self.ocr.extract_text(path)
+
+            result.text_length = len(text)
+
+            if not text.strip():
+                result.errors.append("No text extracted from document")
+                return result
+
+            # 2. LLM analysis
+            info = self.llm.analyze(text)
+            result.document_info = info
+
+            # 3. Update PDF metadata in-place
+            self.metadata.update_pdf(path, info)
+
+            # 4. Update sidecar in-place
+            result.sidecar_path = self.metadata.write_sidecar(path, info)
+            result.output_path = path
+
+            logger.info(f"Reprocessed: {path.name}")
+
+        except Exception as e:
+            logger.exception(f"Reprocessing failed: {e}")
+            result.errors.append(str(e))
+
+        return result
