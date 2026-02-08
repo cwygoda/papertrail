@@ -60,3 +60,28 @@ class TestProcessingResult:
         assert result.sidecar_path is None
         assert result.text_length == 0
         assert result.errors == []
+
+
+class TestDocumentInfo:
+    """Tests for DocumentInfo."""
+
+    def test_steuerrelevant_default_false(self) -> None:
+        info = DocumentInfo(
+            title="Test",
+            subject="Test",
+            issuer="Test",
+            summary="Test",
+            date=None,
+        )
+        assert info.steuerrelevant is False
+
+    def test_steuerrelevant_can_be_true(self) -> None:
+        info = DocumentInfo(
+            title="Steuerbescheid 2024",
+            subject="Steuern",
+            issuer="Finanzamt",
+            summary="Einkommensteuerbescheid",
+            date=date(2024, 3, 15),
+            steuerrelevant=True,
+        )
+        assert info.steuerrelevant is True

@@ -14,6 +14,7 @@ class DocumentInfo:
     issuer: str
     summary: str
     date: date | None  # Issue/document date
+    steuerrelevant: bool = False  # Relevant for German tax declaration
 
 
 @dataclass
