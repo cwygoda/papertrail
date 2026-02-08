@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.cwygoda.document-inbox</string>
+    <string>com.cwygoda.papertrail</string>
 
     <key>ProgramArguments</key>
     <array>
@@ -11,7 +11,7 @@
         <string>run</string>
         <string>--project</string>
         <string>/Users/cwygoda/HobbyForge/document-inbox</string>
-        <string>document-inbox</string>
+        <string>papertrail</string>
         <string>watch</string>
     </array>
 
@@ -22,10 +22,10 @@
     <true/>
 
     <key>StandardOutPath</key>
-    <string>/Users/cwygoda/Library/Logs/document-inbox.log</string>
+    <string>/Users/cwygoda/Library/Logs/papertrail.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/cwygoda/Library/Logs/document-inbox.log</string>
+    <string>/Users/cwygoda/Library/Logs/papertrail.log</string>
 
     <key>WorkingDirectory</key>
     <string>/Users/cwygoda/HobbyForge/document-inbox</string>

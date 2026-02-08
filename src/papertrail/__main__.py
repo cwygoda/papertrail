@@ -1,4 +1,4 @@
-"""CLI entry point for document-inbox."""
+"""CLI entry point for papertrail."""
 
 import logging
 import subprocess
@@ -16,7 +16,7 @@ from .config import load_settings
 from .domain.services import ProcessingService
 from .watcher import run_watcher
 
-PLIST_NAME = "com.cwygoda.document-inbox.plist"
+PLIST_NAME = "com.cwygoda.papertrail.plist"
 LAUNCHAGENTS_DIR = Path("~/Library/LaunchAgents").expanduser()
 LOGS_DIR = Path("~/Library/Logs").expanduser()
 
@@ -37,7 +37,7 @@ def setup_logging(verbose: bool = False) -> None:
 )
 @click.pass_context
 def cli(ctx: click.Context, verbose: bool, config: str | None) -> None:
-    """Document Inbox - iCloud Preview folder watcher."""
+    """Papertrail - iCloud Preview folder watcher."""
     setup_logging(verbose)
     ctx.ensure_object(dict)
     ctx.obj["config_path"] = Path(config) if config else None

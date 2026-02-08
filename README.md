@@ -1,4 +1,4 @@
-# Document Inbox
+# Papertrail
 
 Watches the iCloud Preview folder for scanned documents, runs OCR, extracts metadata via LLM, and organizes them into a date-based folder structure.
 
@@ -25,18 +25,18 @@ Failed documents go to `.quarantine/` for manual review.
 ```bash
 # Clone and install
 git clone <repo-url>
-cd document-inbox
+cd papertrail
 uv sync
 
 # Pull the default model
 ollama pull gemma3:4b
 
 # Copy config (optional - defaults work for most setups)
-mkdir -p ~/.config/document-inbox
-cp resources/config.example.toml ~/.config/document-inbox/config.toml
+mkdir -p ~/.config/papertrail
+cp resources/config.example.toml ~/.config/papertrail/config.toml
 
 # Install launchd service (runs at login, auto-restarts)
-uv run document-inbox install
+uv run papertrail install
 ```
 
 ## Usage
@@ -45,31 +45,31 @@ uv run document-inbox install
 
 ```bash
 # Process a single file (for testing)
-document-inbox process /path/to/document.pdf
+papertrail process /path/to/document.pdf
 
 # Process without moving to storage
-document-inbox process --keep /path/to/document.pdf
+papertrail process --keep /path/to/document.pdf
 
 # Run watcher manually
-document-inbox watch
+papertrail watch
 
 # Clean up old trash files
-document-inbox cleanup
+papertrail cleanup
 
 # Service management
-document-inbox install    # Install launchd service
-document-inbox uninstall  # Remove launchd service
+papertrail install    # Install launchd service
+papertrail uninstall  # Remove launchd service
 ```
 
 ### Logs
 
 ```bash
-tail -f ~/Library/Logs/document-inbox.log
+tail -f ~/Library/Logs/papertrail.log
 ```
 
 ## Configuration
 
-`~/.config/document-inbox/config.toml`:
+`~/.config/papertrail/config.toml`:
 
 ```toml
 [paths]

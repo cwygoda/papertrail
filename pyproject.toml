@@ -1,5 +1,5 @@
 [project]
-name = "document-inbox"
+name = "papertrail"
 version = "0.1.0"
 description = "Monitor iCloud Preview folder for scanned docs, move to inbox"
 readme = "README.md"
@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [project.scripts]
-document-inbox = "document_inbox.__main__:cli"
+papertrail = "papertrail.__main__:cli"
 
 [build-system]
 requires = ["uv_build>=0.9.16,<0.10.0"]

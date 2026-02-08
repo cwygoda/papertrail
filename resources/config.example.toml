@@ -1,5 +1,5 @@
-# Document Inbox Configuration
-# Copy to ~/.config/document-inbox/config.toml
+# Papertrail Configuration
+# Copy to ~/.config/papertrail/config.toml
 
 [paths]
 # iCloud Preview folder (source of scanned docs)

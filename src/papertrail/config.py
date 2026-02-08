@@ -16,7 +16,7 @@ DEFAULT_SOURCE = "~/Library/Mobile Documents/com~apple~Preview/Documents"
 DEFAULT_BASE = "~/Documents/Inbox"
 DEFAULT_PATTERNS = ["*.pdf", "*.png", "*.jpg", "*.jpeg"]
 DEFAULT_RETENTION_DAYS = 30
-CONFIG_PATH = Path("~/.config/document-inbox/config.toml").expanduser()
+CONFIG_PATH = Path("~/.config/papertrail/config.toml").expanduser()
 
 
 class LLMProvider(str, Enum):
@@ -66,7 +66,7 @@ class WatchConfig(BaseSettings):
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="DOCUMENT_INBOX_")
+    model_config = SettingsConfigDict(env_prefix="PAPERTRAIL_")
 
     paths: PathsConfig = PathsConfig()
     cleanup: CleanupConfig = CleanupConfig()
