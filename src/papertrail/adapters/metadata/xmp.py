@@ -12,7 +12,7 @@ NS = {
     "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     "dc": "http://purl.org/dc/elements/1.1/",
     "xmp": "http://ns.adobe.com/xap/1.0/",
-    "pt": "http://papertrail.local/1.0/",
+    "pt": "https://papertrail.wygoda.net/ns/1.0/",
     "xml": "http://www.w3.org/XML/1998/namespace",
 }
 
